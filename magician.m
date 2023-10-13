@@ -8,7 +8,7 @@ classdef magician < handle
         defaultArmQ = [0 0.873 0 0 0];
 
         eStop = false; % function for showing if the estop button has been pressed
-        resumeSection = ""; % 1 = moveArm(), 
+        resumeFunction = 0; 
     end
 
     methods
@@ -23,6 +23,11 @@ classdef magician < handle
         function emergencyStop(self)
             self.eStop = true;
         end
+
+        function resume(self)
+            self.resumeFunction = 0;
+            self.eStop = false;
+        end
         
         % animate function to current joint config
         function animate(self)
@@ -31,9 +36,10 @@ classdef magician < handle
 
         % Function to move the arm along a specific trajectory
         function moveArm(self, endTr, steps)
-                if nargin < 1
+                if nargin <= 1
                     load resume i steps traj; % loads resume state if estop has occured
                     try delete resume; end %#ok<TRYNC>
+                    self.resume
                 else
                     i = 1;
                     traj = self.createTrajIckon(endTr,steps);
@@ -48,7 +54,7 @@ classdef magician < handle
 
                     if self.eStop % checking if eStop has been pressed
                          save resume -regexp ^(?!(self)$). % saves all the local variables except the self object
-                         self.resumeSection = 1;
+                         self.resumeFunction = 1;
                          return
                     end
                     i = i+1;
@@ -59,11 +65,6 @@ classdef magician < handle
             endQ = self.robot.model.ikcon(endTr, self.armQ);
             traj = jtraj(self.armQ,endQ,steps);
         end
-
-
-
-
-
 
         %% Test Functions for Emergency Stop file writing and the Estop
         function testWrite(self)
