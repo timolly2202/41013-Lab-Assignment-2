@@ -8,7 +8,7 @@ classdef magician < handle
         defaultArmQ = [0 0.873 0 0 0];
 
         eStop = false; % function for showing if the estop button has been pressed
-        resumeFunction = 0; 
+        resumeFunction = 0; % 1 is move arm function
     end
 
     methods
