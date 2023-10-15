@@ -1,4 +1,4 @@
-classdef Dobot_CR3 < handle
+classdef Dobot_CR3 < RobotBaseClass
 % test
     properties(Access = public)
         plyFileNameStem = 'CR3';
@@ -32,12 +32,12 @@ classdef Dobot_CR3 < handle
         function CreateModel(self)  
 
             % Create the CR3 model mounted on a linear rail
-            link(1) = Link('d',0,'a',0,'alpha',0,'qlim',deg2rad([-360 360]), 'offset',0);
-            link(2) = Link('d',0,'a',0,'alpha',0,'qlim',deg2rad([-360 360]), 'offset',0);
-            link(3) = Link('d',0,'a',0,'alpha',0,'qlim', deg2rad([-155 155]), 'offset',0);
-            link(4) = Link('d',0,'a',0,'alpha',0,'qlim', deg2rad([-360 360]), 'offset', 0);
-            link(5) = Link('d',0,'a',0,'alpha',0,'qlim',deg2rad([-360 360]),'offset', 0);
-            link(6) = Link('d',0,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset',0);
+            link(1) = Link('d',0.1348,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]), 'offset',0);
+            link(2) = Link('d',0,'a',-0.274,'alpha',0,'qlim',deg2rad([-360 360]), 'offset',0);
+            link(3) = Link('d',0,'a',-0.23,'alpha',0,'qlim', deg2rad([-155 155]), 'offset',0);
+            link(4) = Link('d',0.1288,'a',0,'alpha',pi/2,'qlim', deg2rad([-360 360]), 'offset', 0);
+            link(5) = Link('d',0.116,'a',0,'alpha',-pi/2,'qlim',deg2rad([-360 360]),'offset', 0);
+            link(6) = Link('d',0.105,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset',0);
           
 			% Generate the model
             self.model = SerialLink(link,'name',self.name);       
