@@ -18,23 +18,24 @@ classdef Robot < handle
             % self.robot = ans;
 
             if robotName == "DobotMagician"
-                self.robot = DobotMagician;
+                self.robot = DobotMagician();
 
             elseif robotName == "Dobot_CR3"
-                self.robot = Dobot_CR3;
+                self.robot = Dobot_CR3();
+
+            else
+                self.robot = DobotMagician();
 
             end
-            
             self.robot.model.delay = 0;
-            self.robot.model.animate(self.armQ)
             view(3)
 
-            hold on
             q = self.robot.model.getpos;
             qlims = self.robot.model.qlim;
 
             lenq = length(q);
-            self.armQ = zeros(lenq);
+            self.armQ = zeros(1,lenq);
+            disp(self.armQ)
             
             % This for loop sets the arm joints to the ones generated in
             % the self.robot class, while also checking that it is within
@@ -46,7 +47,8 @@ classdef Robot < handle
                     self.armQ(i) = qlims(i,2);
                 end
             end
-
+            disp(self.armQ)
+            self.animate;
 
         end
         
