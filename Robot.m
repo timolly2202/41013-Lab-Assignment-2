@@ -1,5 +1,5 @@
 classdef Robot < handle
-    %UNTITLED3 Summary of this class goes here
+    %Robot 
     %   Detailed explanation goes here
 
     properties
@@ -35,7 +35,6 @@ classdef Robot < handle
 
             lenq = length(q);
             self.armQ = zeros(1,lenq);
-            disp(self.armQ)
             
             % This for loop sets the arm joints to the ones generated in
             % the self.robot class, while also checking that it is within
@@ -47,7 +46,6 @@ classdef Robot < handle
                     self.armQ(i) = qlims(i,2);
                 end
             end
-            disp(self.armQ)
             self.animate;
 
         end
