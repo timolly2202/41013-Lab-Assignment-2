@@ -14,9 +14,9 @@ classdef Rubbish < handle
             if nargin < 1
                 r = randi([1,2],1); 
                 if r == 1
-                    rubbishType = 'Can';
+                    rubbishType = "Can";
                 else
-                    rubbishType = 'PlasticBottle';
+                    rubbishType = "PlasticBottle";
                 end
                 basePosition = [0 0 0];
                 nameIndex = 1;
@@ -33,13 +33,12 @@ classdef Rubbish < handle
             if rubbishType == "rand"
                 r = randi([1,2],1); 
                 if r == 1
-                    rubbishType = 'Can';
+                    rubbishType = "Can";
                 else
-                    rubbishType = 'PlasticBottle';
+                    rubbishType = "PlasticBottle";
                 end
-            else
-                self.rubbishType = rubbishType;
             end
+            self.rubbishType = rubbishType;
 
             % nameIndex is just for naming the robot model with the can and
             % such in it.
@@ -51,8 +50,14 @@ classdef Rubbish < handle
             
             self.model = self.GetModel(name,rubbishType);
             self.model.base = transl(basePosition(1),basePosition(2),basePosition(3));
+            
+            if rubbishType == "Can"
+                color = {'white'}; % #b5b5b5
+            elseif rubbishType == "PlasticBottle"
+                color = {'blue'};% #bdf1ff
+            end
 
-            plot3d(self.model,0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow','nowrist');
+            plot3d(self.model,0,'workspace',self.workspaceDimensions,'color',color,'view',[-30,30],'delay',0,'noarrow','nowrist');
 
         end
 
@@ -92,31 +97,6 @@ classdef Rubbish < handle
             % {[], vertexData} so that data is attributed to Link 1
             % in plot3d rather than Link 0 (base).
             model.points = {[], vertexData};
-
-            % vertex colours to make it look nice
-            % vertexColours = [0.5,0.5,0.5]; % Default if no colours in plyData
-            % try 
-            %     vertexColours = [plyData.vertex.red ...
-            %                     , plyData.vertex.green ...
-            %                     , plyData.vertex.blue]/255;
-            % 
-            % catch ME_1
-            %     disp(ME_1);
-            %     disp('No vertex colours in plyData');
-            % end
-            % handles = findobj('Tag', model.name);
-            % h = get(handles,'UserData');
-            % 
-            % h.link(1).Children.FaceVertexCData = vertexColours;
-            % h.link(1).Children.FaceColor = 'interp';
         end
-        % function rubbishType = randomRubbish()
-        %     r = randi([1,2],1); 
-        %     if r == 1
-        %         rubbishType = 'Can';
-        %     else
-        %         rubbishType = 'PlasticBottle';
-        %     end
-        % end
     end
 end
