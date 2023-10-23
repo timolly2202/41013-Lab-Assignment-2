@@ -2,13 +2,13 @@ classdef Rubbish < handle
     %Rubbish class to hold the bottle and cans the dobot will pick up
 
     properties
-        rubbishType; % type determines what type of rubbish it is, "aluminium", or "plastic", or "glass"
+        rubbishType; % type determines what type of rubbish it is, "aluminium", or "plastic", or "glass", or "rand" to randomly choose.
         model;
         workspaceDimensions = [-1 1 -1 1 0 1];
     end
 
     methods
-        function self = Rubbish(rubbishType, basePos, nameIndex)
+        function self = Rubbish(rubbishType, basePosition, nameIndex)
             % if no argument added, randomly choose what material the
             % rubbish is
             if nargin < 1
@@ -18,11 +18,11 @@ classdef Rubbish < handle
                 else
                     rubbishType = 'PlasticBottle';
                 end
-                basePos = [0 0 0];
+                basePosition = [0 0 0];
                 nameIndex = 1;
 
             elseif nargin < 2
-                basePos = [0 0 0];
+                basePosition = [0 0 0];
                 nameIndex = 1;
 
             elseif nargin < 3
@@ -30,7 +30,16 @@ classdef Rubbish < handle
 
             end
 
-            self.rubbishType = rubbishType;
+            if rubbishType == "rand"
+                r = randi([1,2],1); 
+                if r == 1
+                    rubbishType = 'Can';
+                else
+                    rubbishType = 'PlasticBottle';
+                end
+            else
+                self.rubbishType = rubbishType;
+            end
 
             % nameIndex is just for naming the robot model with the can and
             % such in it.
@@ -41,7 +50,7 @@ classdef Rubbish < handle
             end
             
             self.model = self.GetModel(name,rubbishType);
-            self.model.base = transl(basePos(1),basePos(2),basePos(3));
+            self.model.base = transl(basePosition(1),basePosition(2),basePosition(3));
 
             plot3d(self.model,0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow','nowrist');
 
@@ -70,7 +79,7 @@ classdef Rubbish < handle
                 plyName = 'bottle.ply';
             end
 
-            [faceData,vertexData,plyData] = plyread(plyName,'tri');
+            [faceData,vertexData] = plyread(plyName,'tri');
             link1 = Link('alpha',0,'a',0,'d',0,'offset',0);
             model = SerialLink(link1,'name',name);
             
@@ -101,5 +110,13 @@ classdef Rubbish < handle
             % h.link(1).Children.FaceVertexCData = vertexColours;
             % h.link(1).Children.FaceColor = 'interp';
         end
+        % function rubbishType = randomRubbish()
+        %     r = randi([1,2],1); 
+        %     if r == 1
+        %         rubbishType = 'Can';
+        %     else
+        %         rubbishType = 'PlasticBottle';
+        %     end
+        % end
     end
 end
