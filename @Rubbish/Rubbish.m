@@ -4,7 +4,7 @@ classdef Rubbish < handle
     properties
         rubbishType; % type determines what type of rubbish it is, "aluminium", or "plastic", or "glass", or "rand" to randomly choose.
         model;
-        workspaceDimensions = [-1 1 -1 1 0 1];
+        workspaceDimensions = [2.2 3 -0.5 0.5 0 1];
     end
 
     methods
@@ -57,7 +57,7 @@ classdef Rubbish < handle
                 color = {'blue'};% #bdf1ff
             end
 
-            plot3d(self.model,0,'workspace',self.workspaceDimensions,'color',color,'view',[-30,30],'delay',0,'noarrow','nowrist');
+            plot3d(self.model,0,'workspace',self.workspaceDimensions,'color',color,'view',[-30,30],'delay',0,'noarrow','nowrist','notiles');
 
         end
 

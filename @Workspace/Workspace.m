@@ -6,6 +6,8 @@ classdef Workspace
     properties
         rubbishModels;
         table;
+        MagicianBaseWorkspace = [0,0,0.8];
+        CR3BaseWorkspace = [2.5,0,0];
     end
 
     properties (Access = private)
@@ -20,9 +22,9 @@ classdef Workspace
 
             if nargin < 1
                 rubbishAmount = 3;
-                rubbishBounds = [0 0.3 0 0.3 0];
+                rubbishBounds = [2.2 3 -0.5 0.5 0];
             elseif nargin < 2
-                rubbishBounds = [0 0.3 0 0.3 0];
+                rubbishBounds = [2.2 3 -0.5 0.5 0];
             end
 
             self.rubbishAmount = rubbishAmount;
@@ -78,26 +80,31 @@ classdef Workspace
             % axis equal;
 
             %Barrier rotations
-            transformPLY(barrier,trotz(pi/2));
-            transformPLY(barrier,transl(-1,0,0));
+            self.transformPLY(barrier,trotz(pi/2));
+            self.transformPLY(barrier,transl(-1,0,0));
 
             % belt rotation
-            transformPLY(belt,trotz(pi/2));
-            transformPLY(belt,transl(1.1,-1,0));
+            self.transformPLY(belt,trotz(pi/2));
+            self.transformPLY(belt,transl(1.1,-1,0));
 
             % fire extinguisher rotation
-            transformPLY(fire,trotz(pi/2));
-            transformPLY(fire,transl(-2.1,-0.6,0));
+            self.transformPLY(fire,trotz(pi/2));
+            self.transformPLY(fire,transl(-2.1,-0.6,0));
 
             % stop button rotation
-            transformPLY(stopB,trotz(pi));
-            transformPLY(stopB,transl(-0.1,-0.7,0));
+            self.transformPLY(stopB,trotz(pi));
+            self.transformPLY(stopB,transl(-0.1,-0.7,0));
         end
-
-        function deleteFurniture(self)
-            try delete(self.table); end
+    end
+    methods(Static)
+        function transformPLY(name, transform)
+            n = name;
+            t = transform;
+            
+            vertices = get(n,'Vertices'); %getting the vertices from the ply model
+            transformedVertices = [vertices,ones(size(vertices,1),1)] * t';
+            set(n,'Vertices',transformedVertices(:,1:3));
         end
-
     end
 end
 
