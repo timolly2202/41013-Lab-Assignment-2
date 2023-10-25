@@ -5,6 +5,7 @@ classdef Rubbish < handle
         rubbishType; % type determines what type of rubbish it is, "aluminium", or "plastic", or "glass", or "rand" to randomly choose.
         model;
         workspaceDimensions = [2.2 3 -0.5 0.5 0 1];
+        onConveyer = false;
     end
 
     methods

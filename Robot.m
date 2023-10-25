@@ -9,16 +9,19 @@ classdef Robot < handle
         eStop = false; % function for showing if the estop button has been pressed
         collision = false;
         resumeFunction = 0; % 1 is move arm function
-        inductiveSensorValue; % value of inductive sensor to identify metallic objects
-        capacitiveSensorValue; % value of capacitive sensor to identify non-metals
+        inductiveSensorValue = false; % value of inductive sensor to identify metallic objects
+        capacitiveSensorValue = false; % value of capacitive sensor to identify non-metals
     end
 
     methods
         % constructor requires the specific robot object to be passed
         % through
-        function self = Robot(robotName)
+        function self = Robot(robotName,robotBaseLocation)
             % run(robotName);
             % self.robot = ans;
+            if nargin < 2
+                robotBaseLocation = [0 0 0];
+            end
 
             if robotName == "DobotMagician"
                 self.robot = DobotMagician();
@@ -50,6 +53,7 @@ classdef Robot < handle
                     self.armQ(i) = qlims(i,2);
                 end
             end
+            self.robot.model.base = transl(robotBaseLocation(1),robotBaseLocation(2),robotBaseLocation(3));
             self.animate;
 
         end

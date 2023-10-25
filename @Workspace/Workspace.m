@@ -1,13 +1,16 @@
 classdef Workspace
     %WORKSPACE
     %   Class holds all the things needed for running simulations like the
-    %   cans,
+    %   cans, and creates the simulated workspace.
+
+    % start of conveyer is [2,0,0.715]
     
     properties
         rubbishModels;
         table;
         MagicianBaseWorkspace = [0,0,0.8];
         CR3BaseWorkspace = [2.5,0,0];
+        conveyerRunning = true; % speed of conveyer is around 20 m/min (1.2 kph), and will stop when a can gets close to the magician (0.33 m per second,
     end
 
     properties (Access = private)
@@ -94,6 +97,12 @@ classdef Workspace
             % stop button rotation
             self.transformPLY(stopB,trotz(pi));
             self.transformPLY(stopB,transl(-0.1,-0.7,0));
+        end
+
+        function animateModels(self)
+            for i = 1:length(self.rubbishModels)
+                self.rubbishModels{i}.model.animate(0);
+            end
         end
     end
     methods(Static)
