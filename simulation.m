@@ -5,9 +5,9 @@ clc
 
 
 work = Workspace(2);
-work.generateFurniture();
 
 magician = Robot("DobotMagician",work.MagicianBaseWorkspace);
+cr3 = Robot("Dobot_CR3",work.CR3BaseWorkspace);
 
 work.rubbishModels{1}.model.base = transl(2,0,0.714);
 work.rubbishModels{1}.onConveyer = true;
@@ -22,9 +22,17 @@ work.animateModels();
 
 conveyerSpeed = 0.003;
 
-for t = 1:steps
+rubbishAmount = length(work.rubbishModels);
+
+
+if eStop
+    magician.eStop = true;
+    cr3.eStop = true;
+    work.conveyerRunning = false;
+end
+for i = 1:steps
     if work.conveyerRunning
-        for j = 1:length(work.rubbishModels)
+        for j = 1:rubbishAmount
             if work.rubbishModels{j}.onConveyer
                 rubbishBaseTr = work.rubbishModels{j}.model.base.T;
                 
@@ -40,7 +48,5 @@ for t = 1:steps
     end
 end
 
-if eStop
-    magician.eStop = true
-    work.conveyerRunning = false
-end
+
+

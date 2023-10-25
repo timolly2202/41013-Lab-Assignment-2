@@ -7,21 +7,22 @@ classdef Workspace
     
     properties
         rubbishModels;
-        table;
+        conveyerRunning = true; % speed of conveyer is around 20 m/min (1.2 kph), and will stop when a can gets close to the magician (0.33 m per second,
         MagicianBaseWorkspace = [0,0,0.8];
         CR3BaseWorkspace = [2.5,0,0];
-        conveyerRunning = true; % speed of conveyer is around 20 m/min (1.2 kph), and will stop when a can gets close to the magician (0.33 m per second,
     end
 
     properties (Access = private)
         rubbishAmount;
         rubbishBounds;
+        
     end
     
     methods
         function self = Workspace(rubbishAmount, rubbishBounds)
             % self.dobotMagician = Robot("DobotMagician");
-            hold on 
+            hold on
+            self.generateFurniture();
 
             if nargin < 1
                 rubbishAmount = 3;

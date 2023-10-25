@@ -11,6 +11,9 @@ classdef Robot < handle
         resumeFunction = 0; % 1 is move arm function
         inductiveSensorValue = false; % value of inductive sensor to identify metallic objects
         capacitiveSensorValue = false; % value of capacitive sensor to identify non-metals
+
+        step;
+        stepMax = 100;
     end
 
     methods
