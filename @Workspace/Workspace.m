@@ -77,40 +77,21 @@ classdef Workspace
 
             % axis equal;
 
-            %Person rotations
-            % rotate(person, trotz(pi));
-            % rotate(person, (transl(3,-1,0)));
-
             %Barrier rotations
-            rotate(barrier,trotz(pi/2));
-            rotate(barrier,transl(-1,0,0));
+            transformPLY(barrier,trotz(pi/2));
+            transformPLY(barrier,transl(-1,0,0));
 
             % belt rotation
-            rotate(belt,trotz(pi/2));
-            rotate(belt,transl(1.1,-1,0));
+            transformPLY(belt,trotz(pi/2));
+            transformPLY(belt,transl(1.1,-1,0));
 
             % fire extinguisher rotation
-            rotate(fire,trotz(pi/2));
-            rotate(fire,transl(-2.1,-0.6,0));
+            transformPLY(fire,trotz(pi/2));
+            transformPLY(fire,transl(-2.1,-0.6,0));
 
             % stop button rotation
-            rotate(stopB,trotz(pi));
-            rotate(stopB,transl(-0.1,-0.7,0));
-
-            %Placing Dobot
-            Robot1Base = [0,0,0.8];
-            robot1 = DobotMagician(transl(Robot1Base));
-
-            %Placing CR3 (UR3 placeholder)
-            Robot2Base = [2.5,0,0];
-            robot2 = UR3(transl(Robot2Base));
-
-            % teach for both robots
-            % q1 = zeros(1,5);
-            % robot1.model.teach(q1);
-            % q2 = zeros(1,6);
-            % robot2.model.teach(q2);
-            
+            transformPLY(stopB,trotz(pi));
+            transformPLY(stopB,transl(-0.1,-0.7,0));
         end
 
         function deleteFurniture(self)
