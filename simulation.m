@@ -23,7 +23,7 @@ work.animateModels();
 conveyerSpeed = 0.003;
 
 for t = 1:steps
-    if work.conveyerRunning == true
+    if work.conveyerRunning
         for j = 1:length(work.rubbishModels)
             if work.rubbishModels{j}.onConveyer
                 rubbishBaseTr = work.rubbishModels{j}.model.base.T;
