@@ -6,6 +6,8 @@ classdef Workspace
     properties
         rubbishModels;
         table;
+        MagicianBaseWorkspace = [0,0,0.8];
+        CR3BaseWorkspace = [2.5,0,0];
     end
 
     properties (Access = private)
@@ -20,9 +22,9 @@ classdef Workspace
 
             if nargin < 1
                 rubbishAmount = 3;
-                rubbishBounds = [0 0.3 0 0.3 0];
+                rubbishBounds = [2.2 3 -0.5 0.5 0];
             elseif nargin < 2
-                rubbishBounds = [0 0.3 0 0.3 0];
+                rubbishBounds = [2.2 3 -0.5 0.5 0];
             end
 
             self.rubbishAmount = rubbishAmount;
@@ -77,46 +79,32 @@ classdef Workspace
 
             % axis equal;
 
-            %Person rotations
-            % rotate(person, trotz(pi));
-            % rotate(person, (transl(3,-1,0)));
-
             %Barrier rotations
-            rotate(barrier,trotz(pi/2));
-            rotate(barrier,transl(-1,0,0));
+            self.transformPLY(barrier,trotz(pi/2));
+            self.transformPLY(barrier,transl(-1,0,0));
 
             % belt rotation
-            rotate(belt,trotz(pi/2));
-            rotate(belt,transl(1.1,-1,0));
+            self.transformPLY(belt,trotz(pi/2));
+            self.transformPLY(belt,transl(1.1,-1,0));
 
             % fire extinguisher rotation
-            rotate(fire,trotz(pi/2));
-            rotate(fire,transl(-2.1,-0.6,0));
+            self.transformPLY(fire,trotz(pi/2));
+            self.transformPLY(fire,transl(-2.1,-0.6,0));
 
             % stop button rotation
-            rotate(stopB,trotz(pi));
-            rotate(stopB,transl(-0.1,-0.7,0));
-
-            %Placing Dobot
-            Robot1Base = [0,0,0.8];
-            robot1 = DobotMagician(transl(Robot1Base));
-
-            %Placing CR3 (UR3 placeholder)
-            Robot2Base = [2.5,0,0];
-            robot2 = UR3(transl(Robot2Base));
-
-            % teach for both robots
-            % q1 = zeros(1,5);
-            % robot1.model.teach(q1);
-            % q2 = zeros(1,6);
-            % robot2.model.teach(q2);
+            self.transformPLY(stopB,trotz(pi));
+            self.transformPLY(stopB,transl(-0.1,-0.7,0));
+        end
+    end
+    methods(Static)
+        function transformPLY(name, transform)
+            n = name;
+            t = transform;
             
+            vertices = get(n,'Vertices'); %getting the vertices from the ply model
+            transformedVertices = [vertices,ones(size(vertices,1),1)] * t';
+            set(n,'Vertices',transformedVertices(:,1:3));
         end
-
-        function deleteFurniture(self)
-            try delete(self.table); end
-        end
-
     end
 end
 
