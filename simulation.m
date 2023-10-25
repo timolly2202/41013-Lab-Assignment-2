@@ -24,13 +24,16 @@ conveyerSpeed = 0.003;
 
 rubbishAmount = length(work.rubbishModels);
 
+pickupRubbishNum = 0;
 
-if eStop
-    magician.eStop = true;
-    cr3.eStop = true;
-    work.conveyerRunning = false;
-end
-for i = 1:steps
+while rubbishAmount > 0
+    if eStop
+        magician.eStop = true;
+        cr3.eStop = true;
+        work.conveyerRunning = false;
+        break
+    end
+
     if work.conveyerRunning
         for j = 1:rubbishAmount
             if work.rubbishModels{j}.onConveyer
@@ -40,12 +43,14 @@ for i = 1:steps
                     work.rubbishModels{j}.model.base = rubbishBaseTr * transl(-conveyerSpeed,0,0);
                 else
                     work.conveyerRunning = false;
+                    pickupRubbishNum = j;
                 end
             end
         end
         work.animateModels();
         pause(0.01)
     end
+    
 end
 
 
