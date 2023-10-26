@@ -12,8 +12,12 @@ classdef Robot < handle
         inductiveSensorValue = false; % value of inductive sensor to identify metallic objects
         capacitiveSensorValue = false; % value of capacitive sensor to identify non-metals
 
+        pickedUpNum = 0;
+
         step;
         stepMax = 100;
+        
+        homeQ;
     end
 
     methods
@@ -28,13 +32,15 @@ classdef Robot < handle
 
             if robotName == "DobotMagician"
                 self.robot = DobotMagician();
+                self.homeQ = deg2rad([0 20 45 90 0]);
 
             elseif robotName == "Dobot_CR3"
                 self.robot = Dobot_CR3();
+                self.homeQ = deg2rad([0 -90 0 -90 0 0]);
 
             else
                 self.robot = DobotMagician();
-
+                self.homeQ = deg2rad([0 20 45 90 0]);
             end
 
             self.robot.model.delay = 0;
@@ -44,18 +50,8 @@ classdef Robot < handle
             qlims = self.robot.model.qlim;
 
             lenq = length(q);
-            self.armQ = zeros(1,lenq);
+            self.armQ = self.homeQ;
             
-            % This for loop sets the arm joints to the ones generated in
-            % the self.robot class, while also checking that it is within
-            % the joint limits.
-            for i = 1:lenq
-                if qlims(i,1)< q(i) && q(i) < qlims(i,2) 
-                    self.armQ(i) = q(i);
-                else
-                    self.armQ(i) = qlims(i,2);
-                end
-            end
             self.robot.model.base = transl(robotBaseLocation(1),robotBaseLocation(2),robotBaseLocation(3));
             self.animate;
 
@@ -132,35 +128,33 @@ classdef Robot < handle
         
         %% Function to check distance to rubbish object and give sensor readings
         function rubbishProximity(self,rubbish)
-            armPos = self.robot.model.fkine(self.armQ).T;
-            armPos = armPos(1:3,4); % x,y,z position of arm effector
+            % armPos = self.robot.model.fkine(self.armQ).T;
+            % armPos = armPos(1:3,4); % x,y,z position of arm effector
 
-            rubbishPos = rubbish.model.base.T;
-            rubbishPos = rubbishPos(1:3,4);
+            % rubbishPos = rubbish.model.base.T;
+            % rubbishPos = rubbishPos(1:3,4);
 
             % put the distance check to top of the rubbish, rather than the
             % base
-            if rubbish.rubbishType == "Can"
-                rubbishPos(3) = rubbishPos(3) + 0.12;
-            else
-                rubbishPos(3) = rubbishPos(3) + 0.2;
-            end
+            % rubbishPos(3) = rubbishPos(3) + rubbish.rubbishHeight;
             
-            distance = sqrt(sum((armPos - rubbishPos).^2));
+            % distance = sqrt(sum((armPos - rubbishPos).^2));
 
-            disp("Distance from end-effector to rubbish is: " + distance);
-            if distance < 0.05
+            % disp("Distance from end-effector to rubbish is: " + distance);
+            % if distance < 0.05
                 if rubbish.rubbishType == "Can"
+                    disp("can")
                     self.inductiveSensorValue = true;
                     self.capacitiveSensorValue = false;
                 else
+                    disp("bottle")
                     self.inductiveSensorValue = false;
                     self.capacitiveSensorValue = true;
                 end
-            else
-                self.inductiveSensorValue = false;
-                self.capacitiveSensorValue = false;
-            end
+            % else
+                % self.inductiveSensorValue = false;
+                % self.capacitiveSensorValue = false;
+            % end
         end
     end
 end

@@ -102,7 +102,7 @@ classdef Workspace
 
         function animateModels(self)
             for i = 1:length(self.rubbishModels)
-                self.rubbishModels{i}.model.animate(0);
+                try self.rubbishModels{i}.model.animate(0); end %#ok<TRYNC>
             end
         end
     end

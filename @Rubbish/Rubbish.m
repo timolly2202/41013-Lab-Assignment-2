@@ -6,6 +6,8 @@ classdef Rubbish < handle
         model;
         workspaceDimensions = [2.2 3 -0.5 0.5 0 1];
         onConveyer = false;
+        pickedUp = false;
+        rubbishHeight;
     end
 
     methods
@@ -48,18 +50,24 @@ classdef Rubbish < handle
                 nameIndex = nameIndex + 1;
                 name = ['rubbish', num2str(nameIndex)];
             end
-            
-            self.model = self.GetModel(name,rubbishType);
-            self.model.base = transl(basePosition(1),basePosition(2),basePosition(3));
-            
+
             if rubbishType == "Can"
                 color = {'white'}; % #b5b5b5
+                self.rubbishHeight = 0.12;
             elseif rubbishType == "PlasticBottle"
                 color = {'blue'};% #bdf1ff
+                self.rubbishHeight = + 0.2;
             end
+            
+            self.model = self.GetModel(name,rubbishType);
+            self.model.base = transl(basePosition(1),basePosition(2),basePosition(3)+self.rubbishHeight);
 
             plot3d(self.model,0,'workspace',self.workspaceDimensions,'color',color,'view',[-30,30],'delay',0,'noarrow','nowrist','notiles');
 
+        end
+
+        function moveModel(self,x,y,z)
+            self.model.base = transl(x,y,z+self.rubbishHeight);
         end
 
         function delete(self)
