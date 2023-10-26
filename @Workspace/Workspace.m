@@ -15,7 +15,6 @@ classdef Workspace
     properties (Access = private)
         rubbishAmount;
         rubbishBounds;
-        
     end
     
     methods

@@ -12,13 +12,13 @@ magician.animate();
 cr3 = Robot("Dobot_CR3",work.CR3BaseWorkspace);
 cr3.animate();
 
-work.rubbishModels{1}.moveModel(2,0,0.72);
+work.rubbishModels{1}.moveModel(2,0,0.8);
 work.rubbishModels{1}.onConveyer = true;
 
-work.rubbishModels{2}.moveModel(1.5,0,0.72);
+work.rubbishModels{2}.moveModel(1.5,0,0.8);
 work.rubbishModels{2}.onConveyer = true;
 
-work.rubbishModels{3}.moveModel(1,0,0.72);
+work.rubbishModels{3}.moveModel(1,0,0.8);
 work.rubbishModels{3}.onConveyer = true;
 
 eStop = false;
@@ -49,7 +49,7 @@ while rubbishAmount > 0
             if work.rubbishModels{j}.onConveyer
                 rubbishBaseTr = work.rubbishModels{j}.model.base.T;
                 
-                if rubbishBaseTr(1,4) >= 0.3
+                if rubbishBaseTr(1,4) >= 0.27
                     work.rubbishModels{j}.model.base = rubbishBaseTr * transl(-conveyerSpeed,0,0);
                 else
                     work.conveyerRunning = false;
