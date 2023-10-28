@@ -12,28 +12,28 @@ magician.animate();
 cr3 = Robot("Dobot_CR3",work.CR3BaseWorkspace);
 cr3.animate();
 
-work.rubbishModels{1}.moveModel(2,0,0.8);
-work.rubbishModels{1}.onConveyer = true;
-
-work.rubbishModels{2}.moveModel(1.5,0,0.8);
-work.rubbishModels{2}.onConveyer = true;
-
-work.rubbishModels{3}.moveModel(1,0,0.8);
-work.rubbishModels{3}.onConveyer = true;
+% work.rubbishModels{1}.moveModel(2,0,0.5);
+% work.rubbishModels{1}.onConveyer = true;
+% 
+% work.rubbishModels{2}.moveModel(1.5,0,0.5);
+% work.rubbishModels{2}.onConveyer = true;
+% 
+% work.rubbishModels{3}.moveModel(1,0,0.5);
+% work.rubbishModels{3}.onConveyer = true;
 
 eStop = false;
 steps = 100;
 
 work.animateModels();
 
-conveyerSpeed = 0.006; % change back to 0.003
+conveyerSpeed = 0.006;
 
 rubbishAmount = length(work.rubbishModels);
 
 pickupRubbishNumMagician = 0;
 index = 0;
 wait = false;
-
+%%
 input("Press Enter to continue simulation: ")
 
 while rubbishAmount > 0
@@ -41,6 +41,7 @@ while rubbishAmount > 0
         magician.eStop = true;
         cr3.eStop = true;
         work.conveyerRunning = false;
+        save resume -regexp ^(?!(self)$). % saves all the local variables except the self object
         break
     end
 

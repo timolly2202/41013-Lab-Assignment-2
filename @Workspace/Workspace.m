@@ -8,38 +8,44 @@ classdef Workspace
     properties
         rubbishModels;
         conveyerRunning = true; % speed of conveyer is around 20 m/min (1.2 kph), and will stop when a can gets close to the magician (0.33 m per second,
-        MagicianBaseWorkspace = [0,0,0.8];
-        CR3BaseWorkspace = [2.5,0,0];
+        MagicianBaseWorkspace = [0,0,0.5];
+        CR3BaseWorkspace = [2.3,0,0.15];
+
+        resumeSection = 0;
     end
 
     properties (Access = private)
         rubbishAmount;
-        rubbishBounds;
+        rubbishRadius; % radius that the rubbish can be placed in around robot (length of arm basically)
     end
     
     methods
-        function self = Workspace(rubbishAmount, rubbishBounds)
+        function self = Workspace(rubbishAmount, rubbishRadius)
             % self.dobotMagician = Robot("DobotMagician");
             hold on
             self.generateFurniture();
 
             if nargin < 1
                 rubbishAmount = 3;
-                rubbishBounds = [2.2 3 -0.5 0.5 0];
+                rubbishRadius = 0.5;
             elseif nargin < 2
-                rubbishBounds = [2.2 3 -0.5 0.5 0];
+                rubbishRadius = 0.5;
             end
 
             self.rubbishAmount = rubbishAmount;
-            self.rubbishBounds = rubbishBounds; % -x, x, -y, y bounds, and z is constant
+            self.rubbishRadius = rubbishRadius;
+
+            z = 0;
+            centrePoints = [self.CR3BaseWorkspace(1)+0.1,self.CR3BaseWorkspace(2)];
 
             for i = 1:self.rubbishAmount
                 % generate random position in the rubbish bounds and place
                 % the object there
-                randx = self.rubbishBounds(1) + (self.rubbishBounds(2)-self.rubbishBounds(1))*rand();
-                randy = self.rubbishBounds(3) + (self.rubbishBounds(4)-self.rubbishBounds(3))*rand();
-                z = self.rubbishBounds(5);
-                self.rubbishModels{i} = Rubbish("rand",[randx randy z],i);
+                randTheta = rand()*pi;
+                randLength = rand()*rubbishRadius;
+                x = centrePoints(1)+randLength*sin(randTheta);
+                y = centrePoints(2)+randLength*cos(randTheta); % y is sin as it can be positive or negative around the centre point
+                self.rubbishModels{i} = Rubbish("rand",[x y z],i);
             end
             axis equal
         end
@@ -54,22 +60,29 @@ classdef Workspace
             % Floor
             surf([-1.5,-1.5;3,3],[-1.5,1;-1.5,1],[0,0;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
-            % support slab
-            surf([-0.4,-0.4;0.1,0.1],[-0.65,0.65;-0.65,0.65],[0.4,0.4;0.4,0.4],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([-0.4,-0.4;-0.4,-0.4],[-0.65,0.65;-0.65,0.65],[0.4,0.4;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([0.1,0.1;0.1,0.1],[-0.65,0.65;-0.65,0.65],[0.4,0.4;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([-0.4,-0.4;0.1,0.1],[-0.65,-0.65;-0.65,-0.65],[0.4,0;0.4,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([-0.4,-0.4;0.1,0.1],[0.65,0.65;0.65,0.65],[0.4,0;0.4,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            % support slab for magician
+            surf([-0.4,-0.4;0.1,0.1],[-0.65,0.65;-0.65,0.65],[0.1,0.1;0.1,0.1],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([-0.4,-0.4;-0.4,-0.4],[-0.65,0.65;-0.65,0.65],[0.1,0.1;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([0.1,0.1;0.1,0.1],[-0.65,0.65;-0.65,0.65],[0.1,0.1;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([-0.4,-0.4;0.1,0.1],[-0.65,-0.65;-0.65,-0.65],[0.1,0;0.1,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([-0.4,-0.4;0.1,0.1],[0.65,0.65;0.65,0.65],[0.1,0;0.1,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
-            % additional robot support slab
-            surf([-0.1,-0.1;0.1,0.1],[-0.1,0.1;-0.1,0.1],[0.5,0.5;0.5,0.5],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([-0.1,-0.1;-0.1,-0.1],[-0.1,0.1;-0.1,0.1],[0.5,0.5;0.4,0.4],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([0.1,0.1;0.1,0.1],[-0.1,0.1;-0.1,0.1],[0.5,0.5;0.4,0.4],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([-0.1,-0.1;0.1,0.1],[-0.1,-0.1;-0.1,-0.1],[0.4,0.5;0.4,0.5],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([-0.1,-0.1;0.1,0.1],[0.1,0.1;0.1,0.1],[0.4,0.5;0.4,0.5],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            % additional robot support slab magician
+            surf([-0.1,-0.1;0.1,0.1],[-0.1,0.1;-0.1,0.1],[0.2,0.2;0.2,0.2],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([-0.1,-0.1;-0.1,-0.1],[-0.1,0.1;-0.1,0.1],[0.2,0.2;0.1,0.1],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([0.1,0.1;0.1,0.1],[-0.1,0.1;-0.1,0.1],[0.2,0.2;0.1,0.1],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([-0.1,-0.1;0.1,0.1],[-0.1,-0.1;-0.1,-0.1],[0.1,0.2;0.1,0.2],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([-0.1,-0.1;0.1,0.1],[0.1,0.1;0.1,0.1],[0.1,0.2;0.1,0.2],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            
+            % support slab cr3
+            surf([2.2,2.2;2.4,2.4],[-0.1,0.1;-0.1,0.1],[0.15,0.15;0.15,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.2,2.2;2.2,2.2],[-0.1,0.1;-0.1,0.1],[0.15,0.15;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.4,2.4;2.4,2.4],[-0.1,0.1;-0.1,0.1],[0.15,0.15;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.2,2.2;2.4,2.4],[-0.1,-0.1;-0.1,-0.1],[0,0.15;0,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.2,2.2;2.4,2.4],[0.1,0.1;0.1,0.1],[0,0.15;0,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
             %Placing objects from UTS
-            PlaceObject('tableRound0.3x0.3x0.3m.ply',[0.12,-0.03,0.5]);
+            PlaceObject('tableRound0.3x0.3x0.3m.ply',[0.12,-0.03,0.5-0.3]);
             fire = PlaceObject('fireExtinguisher.ply',[-0.6,-1.1,0]);
             barrier = PlaceObject('barrier1.5x0.2x1m.ply',[0,0,0]);
             stopB = PlaceObject('emergencyStopWallMounted.ply',[0,0,0.25]);
@@ -77,8 +90,8 @@ classdef Workspace
 
             %Placing objects from external sources
             belt = PlaceObject('conveyor.ply',[1,0,0]); %found at https://sketchfab.com/3d-models/simple-rubber-conveyor-0819b51c59c3407cb98f0e2c75029e30
-            bin1 = PlaceObject('plasticBin.ply',[-0.15,0.4,0.6]); %found at https://sketchfab.com/3d-models/plastic-bin-fa922bc1d2b143bda5bc82f881b982d8
-            bin2 = PlaceObject('plasticBin.ply',[-0.15,-0.4,0.6]);
+            bin1 = PlaceObject('plasticBin.ply',[-0.15,0.4,0.6-0.3]); %found at https://sketchfab.com/3d-models/plastic-bin-fa922bc1d2b143bda5bc82f881b982d8
+            bin2 = PlaceObject('plasticBin.ply',[-0.15,-0.4,0.6-0.3]);
 
             % axis equal;
 
