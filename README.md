@@ -14,7 +14,7 @@ Bottle and Can models made by Tim Ollerton
 - [x] Gui with teach function, and moveing the end effector to a specific point.
 - [x] Create rubbish classes to hold can and bottle models
 - [x] Sensor readings (inductive and capacitive proximity sensors)
+- [x] Sorting methods - metal detectors, magnets, etc.
 - [ ] Depth sensor for environment and collidable objects
 - [ ] detecting object in the environment that can be picked up (can or bottle)
-- [ ] Sorting methods - metal detectors, magnets, etc.
 - [ ] Collision detection

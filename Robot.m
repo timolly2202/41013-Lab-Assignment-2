@@ -56,14 +56,11 @@ classdef Robot < handle
             self.animate;
 
         end
-        
 
         function emergencyStop(self)
             self.eStop = true;
         end
-
-        function resume(self)
-            self.resumeFunction = 0;
+        function emergencyStopReset(self)
             self.eStop = false;
         end
         
@@ -79,13 +76,18 @@ classdef Robot < handle
         % Function to move the arm along a specific trajectory
         function moveArm(self, endTr, steps)
                 if nargin <= 1
-                    load resume i steps traj; % loads resume state if estop has occured
-                    try delete resume; end %#ok<TRYNC>
-                    self.resume
+                    if self.resumeFunction == 1
+                        load resume i steps traj; % loads resume state if estop has occured
+                    end
                 else
                     i = 1;
                     traj = self.createTrajIckon(endTr,steps);
                 end
+
+                % deletes it so that it can't be resumed later if it was
+                % reinitialized but not resumed.
+                try delete resume; end %#ok<TRYNC>
+                self.resumeFunction = 0;
 
                 while i <= steps
                     self.changeArmQ(traj(i,:));
@@ -110,19 +112,6 @@ classdef Robot < handle
         end
 
         function traj = createTrajRMRC(self, endTr, steps)
-            s = lspb(0,1,steps); % Trapezoidal trajectory scalar
-            for i=1:steps
-                traj(1,i) = (1-s(i))*0.35 + s(i)*0.35; % Points in x
-                traj(2,i) = (1-s(i))*-0.55 + s(i)*0.55; % Points in y
-                traj(3,i) = 0.5 + 0.2*sin(i*delta); % Points in z
-                theta(1,i) = 0; % Roll angle
-                theta(2,i) = 5*pi/9; % Pitch angle
-                theta(3,i) = 0; % Yaw angle
-            end
-
-            T = [rpy2r(theta(1,1),theta(2,1),theta(3,1)) x(:,1);zeros(1,3) 1]; % Create transformation of first point and angle
-            q0 = zeros(1,6); % Initial guess for joint angles
-            qMatrix(1,:) = p560.ikcon(T,q0); % Solve joint angles to achieve first waypoint
 
         end
         

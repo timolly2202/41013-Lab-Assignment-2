@@ -37,7 +37,7 @@ classdef Dobot_CR3 < RobotBaseClass
             link(3) = Link('d',0,'a',-0.23,'alpha',0,'qlim', deg2rad([-155 155]), 'offset',0);
             link(4) = Link('d',-0.1288,'a',0,'alpha',pi/2,'qlim', deg2rad([-360 360]), 'offset', 0);
             link(5) = Link('d',0.116,'a',0,'alpha',-pi/2,'qlim',deg2rad([-360 360]),'offset', 0);
-            link(6) = Link('d',0.105,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset',0);
+            link(6) = Link('d',0.105,'a',0,'alpha',pi,'qlim',deg2rad([-360,360]), 'offset',0);
           
 			% Generate the model
             self.model = SerialLink(link,'name',self.name);       

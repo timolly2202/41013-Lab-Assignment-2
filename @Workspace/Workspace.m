@@ -3,20 +3,25 @@ classdef Workspace
     %   Class holds all the things needed for running simulations like the
     %   cans, and creates the simulated workspace.
 
-    % start of conveyer is [2,0,0.715]
+    % start of conveyer is [2,0,0.5]
     
     properties
         rubbishModels;
         conveyerRunning = true; % speed of conveyer is around 20 m/min (1.2 kph), and will stop when a can gets close to the magician (0.33 m per second,
-        MagicianBaseWorkspace = [0,0,0.5];
-        CR3BaseWorkspace = [2.3,0,0.15];
+        
+        eStop = false;
+        resumeFunction = 0; % 1 is for simulation
 
-        resumeSection = 0;
+        magician;
+        cr3;
     end
 
     properties (Access = private)
         rubbishAmount;
         rubbishRadius; % radius that the rubbish can be placed in around robot (length of arm basically)
+
+        magicianBaseLocation = [0,0,0.5];
+        cr3BaseLocation = [2.3,0,0.15];
     end
     
     methods
@@ -36,7 +41,7 @@ classdef Workspace
             self.rubbishRadius = rubbishRadius;
 
             z = 0;
-            centrePoints = [self.CR3BaseWorkspace(1)+0.1,self.CR3BaseWorkspace(2)];
+            centrePoints = [self.cr3BaseLocation(1)+0.1,self.cr3BaseLocation(2)];
 
             for i = 1:self.rubbishAmount
                 % generate random position in the rubbish bounds and place
@@ -47,6 +52,13 @@ classdef Workspace
                 y = centrePoints(2)+randLength*cos(randTheta); % y is sin as it can be positive or negative around the centre point
                 self.rubbishModels{i} = Rubbish("rand",[x y z],i);
             end
+
+            self.magician = Robot("DobotMagician",self.magicianBaseLocation);
+            self.magician.animate();
+            
+            self.cr3 = Robot("Dobot_CR3",self.cr3BaseLocation);
+            self.cr3.animate();
+
             axis equal
         end
 
@@ -59,6 +71,9 @@ classdef Workspace
 
             % Floor
             surf([-1.5,-1.5;3,3],[-1.5,1;-1.5,1],[0,0;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            
+            % Wall
+            surf([-1.5,-1.5;-1.5,-1.5],[-1.5,1;-1.5,1],[0,0;2,2],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
             % support slab for magician
             surf([-0.4,-0.4;0.1,0.1],[-0.65,0.65;-0.65,0.65],[0.1,0.1;0.1,0.1],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
@@ -112,10 +127,28 @@ classdef Workspace
             self.transformPLY(stopB,transl(-0.1,-0.7,0));
         end
 
-        function animateModels(self)
+        function animateRubbishModels(self)
             for i = 1:length(self.rubbishModels)
                 try self.rubbishModels{i}.model.animate(0); end %#ok<TRYNC>
             end
+        end
+
+        function emergencyStop(self)
+            self.eStop = true;
+            self.conveyerRunning = false;
+            self.magician.emergencyStop();
+            self.cr3.emergencyStop();
+        end
+
+        function emergencyStopReset(self)
+            self.eStop = false;
+            self.conveyerRunning = true;
+            self.magician.emergencyStopReset();
+            self.cr3.emergencyStopReset();
+        end
+        
+        function simulation(self)
+            
         end
     end
     methods(Static)

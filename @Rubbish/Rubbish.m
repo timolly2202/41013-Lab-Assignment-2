@@ -56,7 +56,7 @@ classdef Rubbish < handle
                 self.rubbishHeight = 0.12;
             elseif rubbishType == "PlasticBottle"
                 color = {'blue'};% #bdf1ff
-                self.rubbishHeight = + 0.2;
+                self.rubbishHeight = 0.2;
             end
             
             self.model = self.GetModel(name,rubbishType);
@@ -65,9 +65,16 @@ classdef Rubbish < handle
             plot3d(self.model,0,'workspace',self.workspaceDimensions,'color',color,'view',[-30,30],'delay',0,'noarrow','nowrist','notiles');
 
         end
+        
 
         function moveModel(self,x,y,z)
             self.model.base = transl(x,y,z+self.rubbishHeight);
+        end
+
+        % getting the top of teh rubbish location
+        function rubbishLocation = topOfRubbishLocation(self)
+            tr = self.model.base.T;
+            rubbishLocation = tr(1:3,4).';
         end
 
         function delete(self)
