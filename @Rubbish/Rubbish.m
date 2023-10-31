@@ -62,8 +62,8 @@ classdef Rubbish < handle
             self.model = self.GetModel(name,rubbishType);
             self.model.base = transl(basePosition(1),basePosition(2),basePosition(3)+self.rubbishHeight);
 
-            plot3d(self.model,0,'workspace',self.workspaceDimensions,'color',color,'view',[-30,30],'delay',0,'noarrow','nowrist','notiles');
-
+            plot3d(self.model,0,'workspace',self.workspaceDimensions,'color',color,'view',[-30,30],'noarrow','nowrist','notiles');
+            self.model.delay = 0;
         end
         
 

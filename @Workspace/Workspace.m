@@ -148,40 +148,38 @@ classdef Workspace
         end
         
         function simulation(self)
-            % steps for trajectories
-            magicianSteps = 50; 
-            cr3Steps = 100;
-            
-            conveyerSpeed = 0.006;
-            
-            totalRubbish = length(self.rubbishModels);
-            rubbishLeft = totalRubbish;
-            
-            magicianPickupRubbishNum = 0;
-            magicianIndex = 0;
-            magicianWait = false;
-            
-            cr3Index = 0;
-            cr3NextRubbish = 1;
+            % if resuming function from estop, will load the resume.mat file
+            if self.magician.resumeFunction ~= 1
+                % steps for trajectories
+                magicianSteps = 50; 
+                cr3Steps = 100;
+                
+                conveyerSpeed = 0.006;
+                
+                totalRubbish = length(self.rubbishModels);
+                rubbishLeft = totalRubbish;
+                
+                magicianPickupRubbishNum = 0;
+                magicianIndex = 0;
+                magicianWait = false;
+                
+                cr3Index = 0;
+                cr3NextRubbish = 1;
+    
+                
+                try delete(text_h); end %#ok<TRYNC>
+                message = sprintf(['inductive sensor: ', num2str(false),'\n','capcaitive sensor: ', num2str(false)]);
+                text_h = text(0,0,1.3, message,'FontSize', 10);
 
-            
-            try delete(text_h); end %#ok<TRYNC>
-            message = sprintf(['inductive sensor: ', num2str(false),'\n','capcaitive sensor: ', num2str(false)]);
-            text_h = text(0,0,1.3, message,'FontSize', 10);
+            else
+                load resume
+            end
+
+            try delete resume; end %#ok<TRYNC>
+            self.magician.resumeFunction = 0;
             
             % checks to see how much rubbish is put in the bin and stops loop
             while rubbishLeft > 0
-            
-                % checks if estop is pressed at every step, and stops the
-                % simulation if it has been.
-                if self.eStop
-                    self.magician.eStop = true;
-                    self.cr3.eStop = true;
-                    self.conveyerRunning = false;
-                    save resume -regexp ^(?!(self)$). % saves all the local variables except the self object
-                    break
-                end
-                
                 % This if statement stops the conveyer if a piece of rubbish at the end
                 % point (simulated light sensor essentially), as well as simulating the
                 % movement of all the rubbish items on the conveyer
@@ -321,10 +319,20 @@ classdef Workspace
                     end
                 end
             
-                pause(0.01);    
+                pause(0.01);
+                % checks if estop is pressed at every step, and stops the
+                % simulation if it has been.
+                if self.eStop || self.magician.eStop % 
+                    save resume -regexp ^(?!(self)$). % saves all the local variables except the self object
+                    self.magician.resumeFunction = 1;
+                    try delete(text_h); end %#ok<TRYNC>
+                    return
+                end
             end
+            try delete(text_h); end %#ok<TRYNC>
         end
     end
+
     methods(Static)
         function transformPLY(name, transform)
             n = name;
