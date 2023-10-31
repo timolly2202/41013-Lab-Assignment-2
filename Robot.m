@@ -18,6 +18,8 @@ classdef Robot < handle
         stepMax = 100;
         
         homeQ;
+
+        lambdaMat; % lambda matrix for RMRC
     end
 
     methods
@@ -55,11 +57,14 @@ classdef Robot < handle
             self.robot.model.base = transl(robotBaseLocation(1),robotBaseLocation(2),robotBaseLocation(3));
             self.animate;
 
+            self.lambdaMat = 0.01*eye(self.robot.model.n);
+
         end
 
         function emergencyStop(self)
             self.eStop = true;
         end
+
         function emergencyStopReset(self)
             self.eStop = false;
         end
@@ -68,6 +73,7 @@ classdef Robot < handle
         function animate(self)
             self.robot.model.animate(self.armQ)
         end
+        
         % function to change the armQ
         function changeArmQ(self,q)
             self.armQ = q;
@@ -111,8 +117,55 @@ classdef Robot < handle
             traj = jtraj(self.armQ,endQ,steps);
         end
 
-        function traj = createTrajRMRC(self, endTr, steps)
+        function traj = createTrajRMRC(self,endTr,steps,dt)
+            x = zeros;
+            s = lspb(0,1,steps);
+            qMatrix = nan(steps,self.robot.arm.n);
+            qMatrix(1,:) = self.robot.armQ;
+            
+            for i = 1:steps-1
+                
+            end
+        end
 
+        function nextQ = RMRCCalc(dx,dt,q)
+            J = self.robot.model.jacob0(q);
+            JT = J.';
+        
+            manipulability = sqrt(det(J*JT));
+        
+            if manipulability <= 0.05
+                JDLS = pinv(JT*J+self.lambdaMat)*JT;
+                dq = JDLS*dx;
+            else
+                dq = pinv(J)*dx;
+            end
+            nextQ = q+(dq.')*dt;
+        end
+        
+        function x = extractX(tr)
+            x = tr(1:3,4);
+            x = x.';
+            angles = [0,0,0];
+            % angles = extractAngles(tr);
+            x = [x,angles];
+        end
+        
+        function rollPitchYaw = extractAngles(tr)
+            roll = atan2(tr(3,2),tr(3,3)); % phi
+            yaw = atan2(tr(2,1),tr(1,1)); % psi
+            
+            if cos(yaw) == 0
+                pitch = atan2(-tr(3,1),(tr(2,1)/sin(yaw)));
+            else
+                pitch = atan2(-tr(3,1),(tr(1,1)/cos(yaw)));
+            end
+            rollPitchYaw = [roll,pitch,yaw];
+        end
+
+        function animateRMRCStep(self,dx,dt)
+            self.armQ = self.RMRCCalc(dx,dt);
+            self.animate
         end
         
         %% Function to check distance to rubbish object and give sensor readings
