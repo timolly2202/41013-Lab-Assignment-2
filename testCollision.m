@@ -15,8 +15,9 @@ elippsoidRadii = getEllipsoidRadii(robit.model);
 % beltPtCloud = pcread('conveyor.ply')
 
 centrePoints = getLinkCentrePoints(jointTrs);
-rollPitchYaw = extractAngles(jointTrs);
 hold on
+
+points = 
 
 for i = 1:robit.model.n
     % [X,Y,Z] = ellipsoid( centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), ...

@@ -46,7 +46,6 @@ classdef Robot < handle
             end
 
             self.robot.model.delay = 0;
-            view(3)
 
             q = self.robot.model.getpos;
             qlims = self.robot.model.qlim;

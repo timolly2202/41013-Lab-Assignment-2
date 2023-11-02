@@ -21,7 +21,7 @@ classdef Workspace
         rubbishRadius; % radius that the rubbish can be placed in around robot (length of arm basically)
 
         magicianBaseLocation = [0,0,0.5];
-        cr3BaseLocation = [2.3,0,0.15];
+        cr3BaseLocation = [2.35,0,0.15];
     end
     
     methods
@@ -29,12 +29,13 @@ classdef Workspace
             % self.dobotMagician = Robot("DobotMagician");
             hold on
             self.generateFurniture();
+            
 
             if nargin < 1
                 rubbishAmount = 3;
-                rubbishRadius = 0.4;
+                rubbishRadius = 0.2;
             elseif nargin < 2
-                rubbishRadius = 0.4;
+                rubbishRadius = 0.2;
             end
 
             self.rubbishAmount = rubbishAmount;
@@ -47,7 +48,7 @@ classdef Workspace
                 % generate random position in the rubbish bounds and place
                 % the object there
                 randTheta = rand()*pi;
-                randLength = 0.1+rand()*self.rubbishRadius;
+                randLength = 0.3+rand()*self.rubbishRadius;
                 x = centrePoints(1)+randLength*sin(randTheta);
                 y = centrePoints(2)+randLength*cos(randTheta); % y is sin as it can be positive or negative around the centre point
                 self.rubbishModels{i} = Rubbish("rand",[x y z],i);
@@ -58,7 +59,8 @@ classdef Workspace
             
             self.cr3 = Robot("Dobot_CR3",self.cr3BaseLocation);
             self.cr3.animate();
-
+            
+            view(30,20)
             axis equal
         end
 
@@ -90,11 +92,11 @@ classdef Workspace
             surf([-0.1,-0.1;0.1,0.1],[0.1,0.1;0.1,0.1],[0.1,0.2;0.1,0.2],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
             
             % support slab cr3
-            surf([2.2,2.2;2.4,2.4],[-0.1,0.1;-0.1,0.1],[0.15,0.15;0.15,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([2.2,2.2;2.2,2.2],[-0.1,0.1;-0.1,0.1],[0.15,0.15;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([2.4,2.4;2.4,2.4],[-0.1,0.1;-0.1,0.1],[0.15,0.15;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([2.2,2.2;2.4,2.4],[-0.1,-0.1;-0.1,-0.1],[0,0.15;0,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            surf([2.2,2.2;2.4,2.4],[0.1,0.1;0.1,0.1],[0,0.15;0,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.3,2.3;2.5,2.5]-0.05,[-0.1,0.1;-0.1,0.1],[0.15,0.15;0.15,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.3,2.3;2.3,2.3]-0.05,[-0.1,0.1;-0.1,0.1],[0.15,0.15;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.5,2.5;2.5,2.5]-0.05,[-0.1,0.1;-0.1,0.1],[0.15,0.15;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.3,2.3;2.5,2.5]-0.05,[-0.1,-0.1;-0.1,-0.1],[0,0.15;0,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([2.3,2.3;2.5,2.5]-0.05,[0.1,0.1;0.1,0.1],[0,0.15;0,0.15],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
             %Placing objects from UTS
             PlaceObject('tableRound0.3x0.3x0.3m.ply',[0.12,-0.03,0.5-0.3]);
@@ -173,6 +175,12 @@ classdef Workspace
 
             else
                 load resume
+            end
+
+            for i = 1:length(self.rubbishModels)
+                disp(i)
+                disp(self.rubbishModels{i}.model.base);
+                disp("")
             end
 
             try delete resume; end %#ok<TRYNC>
