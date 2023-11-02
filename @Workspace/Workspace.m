@@ -72,7 +72,7 @@ classdef Workspace
             % Floor
             surf([-1.5,-1.5;3,3],[-1.5,1;-1.5,1],[0,0;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
             
-            % Wall
+            % Wallsen
             surf([-1.5,-1.5;-1.5,-1.5],[-1.5,1;-1.5,1],[0,0;2,2],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
             % support slab for magician
@@ -107,6 +107,10 @@ classdef Workspace
             belt = PlaceObject('conveyor.ply',[1,0,0]); %found at https://sketchfab.com/3d-models/simple-rubber-conveyor-0819b51c59c3407cb98f0e2c75029e30
             bin1 = PlaceObject('plasticBin.ply',[-0.15,0.4,0.6-0.3]); %found at https://sketchfab.com/3d-models/plastic-bin-fa922bc1d2b143bda5bc82f881b982d8
             bin2 = PlaceObject('plasticBin.ply',[-0.15,-0.4,0.6-0.3]);
+            light1 = PlaceObject('lightCurtain.ply',[-1,-1,0]); %found at https://www.traceparts.com/en/product/reer-safety-generic-floor-mounting-column-for-light-curtains-80-x-80-mm-h-1200-mm-stainless-steel-accessories?CatalogPath=TRACEPARTS%3ATP02001008&Product=90-04112021-000013&PartNumber=1200506
+            light2 = PlaceObject('lightCurtainRot.ply',[2.8,-1,0]);
+            light3 = PlaceObject('lightCurtain.ply',[-1,1,0]);
+            light4 = PlaceObject('lightCurtainRot.ply',[2.8,1,0]);
 
             % axis equal;
 
@@ -125,6 +129,12 @@ classdef Workspace
             % stop button rotation
             self.transformPLY(stopB,trotz(pi));
             self.transformPLY(stopB,transl(-0.1,-0.7,0));
+
+            % light curtain rotation
+            % self.transformPLY(light2,trotz(pi));
+            % self.transformPLY(light2,transl(5.5,-2,0));
+            % self.transformPLY(light4,trotz(pi));
+            % self.transformPLY(light4,transl(5.5,1.8,0));
         end
 
         function animateRubbishModels(self)
