@@ -16,7 +16,7 @@ cubePoints = [X(:),Y(:),Z(:)];
 work.cr3.changeArmQ(deg2rad([0 0 90 -70 -180 0]))
 work.cr3.animate()
 
-findCollision(cubePoints,work.cr3.robot.model)
+work.cr3.findCollision(cubePoints)
 
 
 %% Functions

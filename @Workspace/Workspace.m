@@ -16,6 +16,8 @@ classdef Workspace
         cr3;
 
         collisionPointCloud;
+        collision = false;
+        testingCollision = false;
     end
 
     properties (Access = private)
@@ -205,7 +207,11 @@ classdef Workspace
                 
                 cr3Index = 0;
                 cr3NextRubbish = 1;
-    
+
+                self.cr3.changeArmQ(self.cr3.homeQ);
+                self.cr3.animate();
+                self.magician.changeArmQ(self.magician.homeQ);
+                self.magician.animate();
                 
                 try delete(text_h); end %#ok<TRYNC>
                 message = sprintf(['inductive sensor: ', num2str(false),'\n','capacitive sensor: ', num2str(false)]);
@@ -378,6 +384,24 @@ classdef Workspace
                 end
             end
             try delete(text_h); end %#ok<TRYNC>
+        end
+        
+        function testCollision(self)
+            self.testingCollision = true;
+            collisionPoints = self.collisionPointCloud;
+            while self.collision == false && self.testingCollision
+                collisions = self.cr3.findCollision(collisionPoints);
+                if any(collisions == 1)
+                    self.collision = true;
+                end
+                pause(0.001)
+            end
+            if self.collision == true
+                disp("collision detected")
+                message = sprintf('Collision Detected');
+                text_h = text(2,2,2, message,'FontSize', 12);
+            end
+            self.testingCollision = false;
         end
     end
 
