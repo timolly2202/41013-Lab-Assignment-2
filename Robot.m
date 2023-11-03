@@ -88,7 +88,7 @@ classdef Robot < handle
                     end
                 else
                     i = 1;
-                    traj = self.createTrajIckon(endTr,steps);
+                    traj = self.createTrajIckon(endTr,steps,self.armQ);
                 end
 
                 % deletes it so that it can't be resumed later if it was
