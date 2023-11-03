@@ -2,46 +2,24 @@ clear
 close all
 clc
 
-robit = Dobot_CR3;
-view(3)
-robit.model.animate(robit.homeQ)
+work = Workspace(4);
+% view(3)
+% robit.model.animate(robit.homeQ)
 % robit.model.teach
 
+[Y,Z] = meshgrid(-0.5:0.05:0.5,0:0.05:0.5);
+sizeMat = size(Y);
+X = repmat(2.1,sizeMat(1),sizeMat(2));
+oneSideOfCube_h = surf(X,Y,Z);
 
-jointTrs = getJointTr(robit.model);
-elippsoidRadii = getEllipsoidRadii(robit.model);
+cubePoints = [X(:),Y(:),Z(:)];
 
-% belt = PlaceObject('conveyor.ply',[1,0,0]);
-% beltPtCloud = pcread('conveyor.ply')
+work.cr3.changeArmQ(deg2rad([0 0 90 -70 -180 0]))
+work.cr3.animate()
 
-centrePoints = getLinkCentrePoints(jointTrs);
-hold on
+findCollision(cubePoints,work.cr3.robot.model)
 
-points = 
 
-for i = 1:robit.model.n
-    % [X,Y,Z] = ellipsoid( centrePoints(i,1), centrePoints(i,2), centrePoints(i,3), ...
-    %     elippsoidRadii(i,1),elippsoidRadii(i,2), elippsoidRadii(i,3));
-
-    [X,Y,Z] = ellipsoid( 0, 0, 0, ...
-        elippsoidRadii(i,1),elippsoidRadii(i,2), elippsoidRadii(i,3));
-    
-    % surf(X,Y,Z)
-    
-    % ellips = [X(:),Y(:),Z(:)];
-    % [roll,pitch,yaw] = extractAngles(jointTrs(:,:,i));
-    % ellips = ellips*rotx(pitch)*roty(roll)*rotz(yaw);
-    % plot3(ellips)
-    % centrePoints(i,1)
-    % plot3(centrePoints(i,1),centrePoints(i,2),centrePoints(i,3),'r*')
-
-    robit.model.points{i} = [X(:),Y(:),Z(:)];
-    warning off
-    robit.model.faces{i} = delaunay(robit.model.points{i});
-    warning on;
-end
-
-robit.model.plot3d(robit.homeQ)
 %% Functions
 % Get the transform of every joint (i.e. start and end of every link),
 % function created from Q2.4 in lab 5 solution
@@ -66,9 +44,9 @@ function ellipsoidRadii = getEllipsoidRadii(model) % will only need to calculate
     ellipsoidRadii = zeros(model.n,3);
     L = model.links;
     for i = 1:model.n % the jointTrs from getJointTr includes the base.
-        z = abs(L(i).d)/2 + 0.15;
-        x = abs(L(i).a)/2 + 0.15;
-        y = 0.15;
+        z = abs(L(i).d)/2 + 0.1;
+        x = abs(L(i).a)/2 + 0.1;
+        y = 0.1;
 
         ellipsoidRadii(i,:) = [x,y,z];
     end
@@ -83,14 +61,18 @@ algebraicDist = ((points(:,1)-centerPoint(1))/radii(1)).^2 ...
 + ((points(:,3)-centerPoint(3))/radii(3)).^2;
 end
 
-function [roll,pitch,yaw] = extractAngles(tr)
-    roll = atan2(tr(3,2),tr(3,3)); % phi
-    yaw = atan2(tr(2,1),tr(1,1)); % psi
+function jointsInCollision = findCollision(pointCloud,model)
+    tr = getJointTr(model);
+    elippsoidRadii = getEllipsoidRadii(model);
+    jointsInCollision = zeros(1,model.n);
     
-    if cos(yaw) == 0
-        pitch = atan2(-tr(3,1),(tr(2,1)/sin(yaw)));
-    else
-        pitch = atan2(-tr(3,1),(tr(1,1)/cos(yaw)));
+    for i = 1:size(tr,3)-1
+        pointCloudAndOnes = [inv(tr(:,:,i)) * [pointCloud,ones(size(pointCloud,1),1)]']';
+        updatedPointCloud = pointCloudAndOnes(:,1:3);
+        % updatedPointCloud = pointCloud.*trotx(roll).*troty(pitch).*trotz(yaw);
+        algebraicDistance = GetAlgebraicDist(updatedPointCloud,[0 0 0],elippsoidRadii(i,:));
+        if size(find(algebraicDistance < 1),1) > 0
+            jointsInCollision(i) = 1;
+        end
     end
-    % rollPitchYaw = [roll,pitch,yaw];
 end
