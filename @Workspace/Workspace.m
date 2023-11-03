@@ -30,7 +30,6 @@ classdef Workspace
             hold on
             self.generateFurniture();
             
-
             if nargin < 1
                 rubbishAmount = 3;
                 rubbishRadius = 0.2;
@@ -43,15 +42,34 @@ classdef Workspace
 
             z = 0;
             centrePoints = [self.cr3BaseLocation(1)+0.1,self.cr3BaseLocation(2)];
+            
+            XY = [  2.641,0.2967; 
+                    2.686,0.1994;
+                    2.674,0.-0.2;
+                    2.594,-0.14];
+            
+            randLocation = false;
 
             for i = 1:self.rubbishAmount
                 % generate random position in the rubbish bounds and place
                 % the object there
-                randTheta = rand()*pi;
-                randLength = 0.3+rand()*self.rubbishRadius;
-                x = centrePoints(1)+randLength*sin(randTheta);
-                y = centrePoints(2)+randLength*cos(randTheta); % y is sin as it can be positive or negative around the centre point
-                self.rubbishModels{i} = Rubbish("rand",[x y z],i);
+
+                if randLocation % for putting the rubbish in nice locations...
+                    randTheta = rand()*pi;
+                    randLength = 0.3+rand()*self.rubbishRadius;
+                    x = centrePoints(1)+randLength*sin(randTheta);
+                    y = centrePoints(2)+randLength*cos(randTheta); % y is sin as it can be positive or negative around the centre point
+                else
+                    x = XY(i,1);
+                    y = XY(i,2);
+                end
+                
+                % make sure at least one of each is made when i > 2
+                if mod(i,2) == 0
+                    self.rubbishModels{i} = Rubbish("can",[x y z],i);
+                else
+                    self.rubbishModels{i} = Rubbish("plastic",[x y z],i);
+                end
             end
 
             self.magician = Robot("DobotMagician",self.magicianBaseLocation);
@@ -180,7 +198,7 @@ classdef Workspace
     
                 
                 try delete(text_h); end %#ok<TRYNC>
-                message = sprintf(['inductive sensor: ', num2str(false),'\n','capcaitive sensor: ', num2str(false)]);
+                message = sprintf(['inductive sensor: ', num2str(false),'\n','capacitive sensor: ', num2str(false)]);
                 text_h = text(0,0,1.3, message,'FontSize', 10);
 
             else
@@ -215,14 +233,13 @@ classdef Workspace
                         end
                     end
                     self.animateRubbishModels();
-            
                 end
                 
                 % generating the initial trajectory for the magician to pick up the
                 % rubbish at the end of the conveyer
                 if (magicianPickupRubbishNum > 0) && (self.magician.pickedUpNum == 0) && (magicianIndex == 0)
                     endTr = self.rubbishModels{magicianPickupRubbishNum}.model.base.T;
-                    magicianTraj = self.magician.createTrajIckon(endTr,magicianSteps);
+                    magicianTraj = self.magician.createTrajIckon(endTr,magicianSteps, self.magician.armQ);
                     magicianIndex = 1;
                     
                 end
@@ -252,7 +269,7 @@ classdef Workspace
                         self.magician.rubbishProximity(self.rubbishModels{self.magician.pickedUpNum});
                         
                         try delete(text_h); end %#ok<TRYNC>
-                        message = sprintf(['inductive sensor: ', num2str(self.magician.inductiveSensorValue),'\n','capcaitive sensor: ', num2str(self.magician.capacitiveSensorValue)]);
+                        message = sprintf(['inductive sensor: ', num2str(self.magician.inductiveSensorValue),'\n','capacitive sensor: ', num2str(self.magician.capacitiveSensorValue)]);
                         text_h = text(0,0,1.3, message,'FontSize', 10);
             
                         if self.magician.inductiveSensorValue == true % metal can is true, goes to left bin
@@ -260,7 +277,7 @@ classdef Workspace
                         else
                             endTr = transl(-0.1,-0.24,0.7); % otherwise, goes to right bin
                         end
-                        magicianTraj = self.magician.createTrajIckon(endTr,magicianSteps);
+                        magicianTraj = self.magician.createTrajIckon(endTr,magicianSteps,self.magician.armQ);
                         magicianPickupRubbishNum = 0;
             
                         self.conveyerRunning = true;
@@ -271,7 +288,7 @@ classdef Workspace
                     % letting go of the picked up rubbish as it is above the bin and
                     % moving the arm back to the home position
                     elseif self.magician.pickedUpNum > 0
-                        magicianTraj = self.magician.createTrajIckon(self.magician.robot.model.fkine(self.magician.homeQ),magicianSteps);
+                        magicianTraj = self.magician.createTrajIckon(self.magician.robot.model.fkine(self.magician.homeQ),magicianSteps, self.magician.armQ);
                         magicianTraj(end,:) = self.magician.homeQ;
                         magicianIndex = 1;
             
@@ -279,7 +296,7 @@ classdef Workspace
                         self.rubbishModels{self.magician.pickedUpNum}.model.animate(0);
                         
                         try delete(text_h); end %#ok<TRYNC>
-                        message = sprintf(['inductive sensor: ', num2str(false),'\n','capcaitive sensor: ', num2str(false)]);
+                        message = sprintf(['inductive sensor: ', num2str(false),'\n','capacitive sensor: ', num2str(false)]);
                         text_h = text(0,0,1.3, message,'FontSize', 10);
             
                         self.magician.pickedUpNum = 0;
@@ -299,7 +316,7 @@ classdef Workspace
                 if (self.cr3.pickedUpNum == 0) && (cr3Index == 0)
                     if cr3NextRubbish <= totalRubbish
                         endTr = self.rubbishModels{cr3NextRubbish}.model.base.T;
-                        cr3Traj = self.cr3.createTrajIckon(endTr,cr3Steps);
+                        cr3Traj = self.cr3.createTrajIckon(endTr,cr3Steps,self.cr3.armQ);
                         cr3Index = 1;
                     end
                 end
@@ -329,10 +346,13 @@ classdef Workspace
                     else
                         self.cr3.pickedUpNum = cr3NextRubbish;
                         cr3NextRubbish = cr3NextRubbish +1;
+
+                        endTr = self.cr3.robot.model.fkine(self.cr3.homeQ);
+                        cr3Traj(1:cr3Steps/2,:) = self.cr3.createTrajIckon(endTr,cr3Steps/2,self.cr3.armQ);
             
                         endTr = transl(2, 0, 0.5+self.rubbishModels{self.cr3.pickedUpNum}.rubbishHeight);
             
-                        cr3Traj = self.cr3.createTrajIckon(endTr,cr3Steps);
+                        cr3Traj(cr3Steps/2+1:end,:) = self.cr3.createTrajIckon(endTr,cr3Steps/2,cr3Traj(cr3Steps/2,:));
                         cr3Index = 1;
                     end
                 end

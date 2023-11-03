@@ -17,9 +17,9 @@ classdef Rubbish < handle
             if nargin < 1
                 r = randi([1,2],1); 
                 if r == 1
-                    rubbishType = "Can";
+                    rubbishType = "can";
                 else
-                    rubbishType = "PlasticBottle";
+                    rubbishType = "plastic";
                 end
                 basePosition = [0 0 0];
                 nameIndex = 1;
@@ -36,9 +36,9 @@ classdef Rubbish < handle
             if rubbishType == "rand"
                 r = randi([1,2],1); 
                 if r == 1
-                    rubbishType = "Can";
+                    rubbishType = "can";
                 else
-                    rubbishType = "PlasticBottle";
+                    rubbishType = "plastic";
                 end
             end
             self.rubbishType = rubbishType;
@@ -51,10 +51,10 @@ classdef Rubbish < handle
                 name = ['rubbish', num2str(nameIndex)];
             end
 
-            if rubbishType == "Can"
+            if rubbishType == "can"
                 color = {'white'}; % #b5b5b5
                 self.rubbishHeight = 0.12;
-            elseif rubbishType == "PlasticBottle"
+            elseif rubbishType == "plastic"
                 color = {'blue'};% #bdf1ff
                 self.rubbishHeight = 0.2;
             end
@@ -94,9 +94,9 @@ classdef Rubbish < handle
         % modified Peter Corke's Robotics Toolbox
         function model = GetModel(name, rubbishType)
 
-            if strcmp(rubbishType, 'Can')
+            if strcmp(rubbishType, 'can')
                 plyName = 'can.ply';
-            elseif strcmp(rubbishType, 'PlasticBottle')
+            elseif strcmp(rubbishType, 'plastic')
                 plyName = 'bottle.ply';
             end
 

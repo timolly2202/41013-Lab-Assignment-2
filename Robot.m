@@ -38,7 +38,7 @@ classdef Robot < handle
 
             elseif robotName == "Dobot_CR3"
                 self.robot = Dobot_CR3();
-                self.homeQ = deg2rad([0 -90 0 -90 0 0]);
+                self.homeQ = deg2rad([0 -90 0 -90 -180 0]);
 
             else
                 self.robot = DobotMagician();
@@ -111,9 +111,12 @@ classdef Robot < handle
         end
         
         %% Trajectory generations
-        function traj = createTrajIckon(self,endTr,steps)
-            endQ = self.robot.model.ikcon(endTr, self.armQ);
-            traj = jtraj(self.armQ,endQ,steps);
+        function traj = createTrajIckon(self,endTr,steps,startQ)
+            if nargin < 2
+                startQ = self.armQ;
+            end
+            endQ = self.robot.model.ikcon(endTr, startQ);
+            traj = jtraj(startQ,endQ,steps);
         end
 
         function traj = createTrajRMRC(self,endTr,steps,dt)
@@ -183,12 +186,12 @@ classdef Robot < handle
 
             % disp("Distance from end-effector to rubbish is: " + distance);
             % if distance < 0.05
-                if rubbish.rubbishType == "Can"
-                    disp("can")
+                if rubbish.rubbishType == "can"
+                    % disp("can")
                     self.inductiveSensorValue = true;
                     self.capacitiveSensorValue = false;
                 else
-                    disp("bottle")
+                    % disp("bottle")
                     self.inductiveSensorValue = false;
                     self.capacitiveSensorValue = true;
                 end
