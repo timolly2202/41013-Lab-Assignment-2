@@ -159,12 +159,6 @@ classdef Workspace
             % stop button rotation
             self.transformPLY(stopB,trotz(pi));
             self.transformPLY(stopB,transl(-0.1,-0.7,0));
-
-            % light curtain rotation
-            % self.transformPLY(light2,trotz(pi));
-            % self.transformPLY(light2,transl(5.5,-2,0));
-            % self.transformPLY(light4,trotz(pi));
-            % self.transformPLY(light4,transl(5.5,1.8,0));
         end
 
         function animateRubbishModels(self)
