@@ -14,6 +14,8 @@ classdef Workspace
 
         magician;
         cr3;
+
+        collisionPointCloud;
     end
 
     properties (Access = private)
@@ -80,6 +82,14 @@ classdef Workspace
             
             view(30,20)
             axis equal
+            
+            % creating the point cloud for collision with the side of the
+            % conveyer belt
+            [Y,Z] = meshgrid(-0.5:0.05:0.5,0:0.05:0.5);
+            sizeMat = size(Y);
+            X = repmat(2.1,sizeMat(1),sizeMat(2));
+            
+            self.collisionPointCloud = [X(:),Y(:),Z(:)];
         end
 
         function generateFurniture(self)

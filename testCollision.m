@@ -10,7 +10,6 @@ work = Workspace(4);
 [Y,Z] = meshgrid(-0.5:0.05:0.5,0:0.05:0.5);
 sizeMat = size(Y);
 X = repmat(2.1,sizeMat(1),sizeMat(2));
-oneSideOfCube_h = surf(X,Y,Z);
 
 cubePoints = [X(:),Y(:),Z(:)];
 
