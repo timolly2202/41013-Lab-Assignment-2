@@ -16,6 +16,7 @@ classdef Workspace
         cr3;
 
         collisionPointCloud;
+
     end
 
     properties (Access = private)
@@ -92,8 +93,8 @@ classdef Workspace
             self.collisionPointCloud = [X(:),Y(:),Z(:)];
         end
 
+        %% Filling the Scene
         function generateFurniture(self)
-            %% Filling the Scene
 
             hold on
 
