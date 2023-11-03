@@ -102,10 +102,10 @@ classdef Workspace
             %Concrete from canvas
 
             % Floor
-            surf([-1.5,-1.5;3,3],[-1.5,1;-1.5,1],[0,0;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([-1.5,-1.5;3.5,3.5],[-1.5,1.5;-1.5,1.5],[0,0;0,0],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
             
             % Wallsen
-            surf([-1.5,-1.5;-1.5,-1.5],[-1.5,1;-1.5,1],[0,0;2,2],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surf([-1.5,-1.5;-1.5,-1.5],[-1.5,1.5;-1.5,1.5],[0,0;2,2],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
             % support slab for magician
             surf([-0.4,-0.4;0.1,0.1],[-0.65,0.65;-0.65,0.65],[0.1,0.1;0.1,0.1],'CData',imread('concrete.jpg'),'FaceColor','texturemap');

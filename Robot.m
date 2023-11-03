@@ -252,9 +252,73 @@ classdef Robot < handle
 
         function gamePadControl(self)
             id = 1;
-            joy = vrjoystick(id)
+            joy = vrjoystick(id);
+            dt = 0.07;
             while self.gamepad
-                [axes,buttons,povs] = read(joy)
+                [axes,buttons,povs] = read(joy);
+                q = self.armQ;
+                % 1 - turn joystick input into an end-effector velocity command
+                Kv = -0.2;
+                Kw = -0.5;
+                
+                stickDrift = 0.15;
+
+                if abs(axes(2))> stickDrift
+                    vx = Kv*axes(2); % left joystick up down
+                else
+                    vx = 0;
+                end
+                
+                if abs(axes(1))> stickDrift
+                    vy = Kv*axes(1); % left joystick left right
+                else
+                    vy = 0;
+                end
+                
+                if abs(axes(3))> stickDrift
+                    vz = Kv*axes(3); % triggers
+                else
+                    vz = 0;
+                end
+                
+                if abs(axes(5))> stickDrift
+                    wx = Kw*axes(5); % right joystick up down
+                else
+                    wx = 0;
+                end
+            
+                if abs(axes(4))> stickDrift
+                    wy = Kw*axes(4); % right joystick left right
+                else
+                    wy = 0;
+                end
+            
+                wz = 0; % Kw*axes(); %
+            
+                dx = [vx;vy;vz;wx;wy;wz];
+            
+                % 2 - use J inverse to calculate joint velocity
+                J = self.robot.model.jacob0(q);
+                JT = J.';
+            
+                manipulability = sqrt(det(J*JT));
+                % manipulability = 0
+                if manipulability <= 0.05
+            
+                    % DLS Jacobian
+                    JDLS = pinv(JT*J+self.lambdaMat)*JT;
+                    dq = JDLS*dx;
+                else
+                    dq = pinv(J)*dx;
+                end
+            
+                % 3 - apply joint velocity to step robot joint angles 
+                q = q + (dq.')*dt;
+                % -------------------------------------------------------------
+                % Update plot
+                self.changeArmQ(q);
+                self.animate()
+
                 pause(0.001)
             end
         end
